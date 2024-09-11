@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inserisci Parole</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        #back-to-game-link {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        #back-to-game-link:hover {
+            color: #0056b3;
+        }
+        @media (max-width: 600px) {
+            #back-to-game-link {
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Inserisci Nuove Parole</h1>
+    <form action="insert_word.php" method="post">
+        <label for="new_word">Nuova Parola:</label>
+        <input type="text" id="new_word" name="new_word" required>
+        <button type="submit">Inserisci</button>
+    </form>
+    <hr>
+    <h2>Carica File .txt</h2>
+    <form action="upload_file.php" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".txt" required>
+        <button type="submit">Carica</button>
+    </form>
+
+    <!-- Aggiunta del link per tornare al gioco -->
+    <a id="back-to-game-link" href="index.html">Torna al Gioco</a>
+</body>
+</html>

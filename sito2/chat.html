@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        .user-list {
+            width: 30%;
+            border-right: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: scroll;
+        }
+        .user-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .user-list li {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #ddd;
+        }
+        .user-list li:hover {
+            background-color: #f0f0f0;
+        }
+        .chat-section {
+            width: 70%;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: scroll;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .chat-messages p {
+            padding: 5px;
+            margin: 5px 0;
+        }
+        .message-input {
+            display: flex;
+        }
+        .message-input input {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .message-input button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+<script>
+    let loggedUser = '';  // Username dell'utente autenticato
+    let selectedUser = ''; // Username dell'utente selezionato
+
+    // Funzione per ottenere i parametri dalla query string
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    // Carica l'elenco degli utenti dal server (dinamicamente dal DB)
+    async function loadUsers() {
+        const userList = document.getElementById('userList');
+        userList.innerHTML = '';  // Pulisci la lista utenti
+
+        // Esegui una chiamata al file PHP per ottenere gli utenti dal DB
+        const response = await fetch(`getUsers.php?username=${loggedUser}`);
+        const users = await response.json();
+
+        // Visualizza la lista di utenti
+        users.forEach(user => {
+            const li = document.createElement('li');
+            li.textContent = user;
+            li.onclick = () => loadChat(user);
+            userList.appendChild(li);
+        });
+    }
+
+    // Carica i messaggi tra l'utente autenticato e l'utente selezionato
+    async function loadChat(user) {
+        selectedUser = user;
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.innerHTML = '';  // Pulisci la sezione della chat
+
+        // Esegui una chiamata al server per ottenere i messaggi dal database
+        const response = await fetch(`getMessages.php?mittente=${loggedUser}&destinatario=${user}`);
+        const messages = await response.json();
+
+        // Visualizza i messaggi nella chat
+        messages.forEach(msg => {
+            const p = document.createElement('p');
+            p.textContent = `${msg.mittente}: ${msg.messaggio}`;
+            chatMessages.appendChild(p);
+        });
+    }
+
+    // Invia un nuovo messaggio
+    async function sendMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const messaggio = messageInput.value;
+
+        if (messaggio.trim() === '') return;
+
+        // Salva il messaggio nel database tramite una richiesta a un file PHP
+        const response = await fetch('sendMessage.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                mittente: loggedUser,
+                destinatario: selectedUser,
+                messaggio
+            })
+        });
+
+        // Aggiungi il messaggio inviato alla chat e pulisci il campo input
+        const chatMessages = document.getElementById('chatMessages');
+        const p = document.createElement('p');
+        p.textContent = `${loggedUser}: ${messaggio}`;
+        chatMessages.appendChild(p);
+
+        messageInput.value = '';
+    }
+
+    // Al caricamento della pagina
+    window.onload = function() {
+        loggedUser = getQueryParam('username');
+        document.getElementById('welcomeMsg').textContent = `Benvenuto, ${loggedUser}!`;
+        loadUsers();  // Carica la lista utenti dal DB
+    };
+</script>
+
+</head>
+<body>
+    <div class="user-list">
+        <h3>Utenti</h3>
+        <ul id="userList"></ul>
+    </div>
+    <div class="chat-section">
+        <h3 id="welcomeMsg">Benvenuto!</h3>
+        <div id="chatMessages" class="chat-messages">
+            <!-- Messaggi della chat -->
+        </div>
+        <div class="message-input">
+            <input type="text" id="messageInput" placeholder="Scrivi un messaggio...">
+            <button onclick="sendMessage()">Invia</button>
+        </div>
+    </div>
+</body>
+</html>

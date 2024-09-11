@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gioco dell'Impiccato</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #hangman-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #word {
+            font-size: 2rem;
+            letter-spacing: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        #keyboard {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 600px;
+        }
+        .key {
+            margin: 0.5rem;
+            padding: 0.75rem;
+            font-size: 1.5rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .key:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #insert-word-link {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        #insert-word-link:hover {
+            color: #0056b3;
+        }
+        @media (max-width: 600px) {
+            #word {
+                font-size: 1.5rem;
+            }
+            .key {
+                font-size: 1rem;
+                padding: 0.5rem;
+            }
+            #insert-word-link {
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="hangman-container">
+        <div id="word">_ _ _ _ _</div>
+        <div id="keyboard"></div>
+    </div>
+
+    <!-- Aggiunta del link per inserire nuove parole -->
+    <a id="insert-word-link" href="insert_word.html">Inserisci nuove parole</a>
+
+    <script src="hangman.js"></script>
+</body>
+</html>

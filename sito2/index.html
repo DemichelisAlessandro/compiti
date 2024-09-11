@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Web Component</title>
+    <script>
+        class LoginComponent extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+                this.shadowRoot.innerHTML = `
+                    <style>
+                        form {
+                            display: flex;
+                            flex-direction: column;
+                            max-width: 300px;
+                            margin: 0 auto;
+                        }
+                        input {
+                            margin: 10px 0;
+                            padding: 8px;
+                            font-size: 16px;
+                        }
+                        button {
+                            padding: 10px;
+                            background-color: #4CAF50;
+                            color: white;
+                            border: none;
+                            cursor: pointer;
+                        }
+                        button:hover {
+                            background-color: #45a049;
+                        }
+                        .error {
+                            color: red;
+                        }
+                    </style>
+                    <form id="loginForm">
+                        <input type="text" id="username" placeholder="Nome utente" required />
+                        <input type="password" id="password" placeholder="Password" required />
+                        <button type="submit">Login</button>
+                        <div class="error" id="errorMsg"></div>
+                    </form>
+                `;
+            }
+
+            connectedCallback() {
+                this.shadowRoot.querySelector('#loginForm').addEventListener('submit', this.handleSubmit.bind(this));
+            }
+
+            async handleSubmit(event) {
+                event.preventDefault();
+                const username = this.shadowRoot.querySelector('#username').value;
+                const password = this.shadowRoot.querySelector('#password').value;
+
+                try {
+                    const response = await fetch('login.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
+                    const result = await response.json();
+
+                    if (result.success) {
+                        // Reindirizza alla pagina chat.html passando l'username come parametro nell'URL
+                        window.location.href = `chat.html?username=${encodeURIComponent(username)}`;
+                    } else {
+                        this.shadowRoot.querySelector('#errorMsg').textContent = 'Nome utente o password errati.';
+                    }
+                } catch (error) {
+                    console.error('Errore durante il login:', error);
+                }
+            }
+        }
+
+        customElements.define('login-component', LoginComponent);
+    </script>
+
+    <!-- Aggiungi il pulsante di registrazione -->
+    <button onclick="window.location.href='registrazione.html'">Registrati</button>
+
+</head>
+<body>
+    <login-component></login-component>
+</body>
+</html>
